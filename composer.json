@@ -1,0 +1,12 @@
+{
+    "name": "jchook/house",
+    "description": "House PHP — A minimal MVC Application Toolset",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wes Roberts",
+            "email": "wes@sdynamics.com"
+        }
+    ],
+    "require": {}
+}
