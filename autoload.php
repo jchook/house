@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/lib/House/Autoloader.php';
+require_once __DIR__ . '/lib/Autoloader.php';
 
 House\Autoloader::register();
 

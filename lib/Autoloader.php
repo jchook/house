@@ -22,7 +22,7 @@ class Autoloader {
 			}
 
 			// Simple directory structure based on namespace hierarchy
-			if (file_exists($file = __DIR__ . '/../' . strtr($className, '\\', '/').'.php')) {
+			if (file_exists($file = __DIR__ . '/' . strtr(substr($className, 6), '\\', '/') . '.php')) {
 				require $file;
 			}
 		});
