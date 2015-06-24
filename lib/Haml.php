@@ -14,8 +14,8 @@ class Haml {
 
 	protected static function init() {
 		if (static::$executor) return;
-		$haml = new MtHaml\Environment('php');
-		static::$executor = new MtHaml\Support\Php\Executor($haml, static::$config);
+		$haml = new \MtHaml\Environment('php');
+		static::$executor = new \MtHaml\Support\Php\Executor($haml, static::$config);
 	}
 
 	public static function config(array $config) {
