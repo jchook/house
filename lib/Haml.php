@@ -2,6 +2,9 @@
 
 namespace House;
 
+use MtHaml\Environment;
+use MtHaml\Support\Php\Executor;
+
 class Haml {
 
 	protected $path;
@@ -14,8 +17,8 @@ class Haml {
 
 	protected static function init() {
 		if (static::$executor) return;
-		$haml = new \MtHaml\Environment('php');
-		static::$executor = new \MtHaml\Support\Php\Executor($haml, static::$config);
+		$haml = new Environment('php');
+		static::$executor = new Executor($haml, static::$config);
 	}
 
 	public static function config(array $config) {
@@ -43,7 +46,7 @@ class Haml {
 		$this::init();
 		try {
 			return $this::$executor->render($this::fullPath($this->path), $this->vars);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			Log::error($e);
 			return 'HAML Render Error';
 		}

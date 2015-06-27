@@ -12,7 +12,7 @@ class MySql extends Database {
 		$this->link = new mysqli($this->host, $this->user, $this->pass, $this->database, $this->port, $this->socket);
 		if ($this->link->connect_errno) {
 			Log::error('mysql connection error: ' . $this->link->connect_errno . ' ' . $this->link->connect_error);
-			throw new Exception('Database Connection Error');
+			throw new \Exception('Database Connection Error');
 		}
 		return $this->link;
 	}
@@ -211,7 +211,7 @@ class MySql extends Database {
 			Log::error(implode(' ', $error));
 		}
 
-		throw new Exception('Query Error');
+		throw new \Exception('Query Error');
 	}
 
 }

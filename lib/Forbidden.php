@@ -2,6 +2,6 @@
 
 namespace House;
 
-class Forbidden extends Exception {}
+class Forbidden extends \Exception {}
 
 ?>

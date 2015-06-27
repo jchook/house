@@ -2,6 +2,6 @@
 
 namespace House;
 
-class Invalid extends Exception {}
+class Invalid extends \Exception {}
 
 ?>

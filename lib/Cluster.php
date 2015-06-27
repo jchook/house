@@ -32,7 +32,7 @@ class Cluster {
 			}
 			return static::$config[$name]['obj'];
 		}
-		throw new Exception('Cluster node ' . $name . ' was not found');
+		throw new \Exception('Cluster node ' . $name . ' was not found');
 	}
 
 }

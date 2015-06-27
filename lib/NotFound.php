@@ -2,6 +2,6 @@
 
 namespace House;
 
-class NotFound extends Exception {}
+class NotFound extends \Exception {}
 
 ?>
