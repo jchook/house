@@ -2,11 +2,6 @@
 
 A super-minimal pure PHP MVC toolkit.
 
-	composer require jchook/house
-
-
-## F*ck yea
-
 * Fast. No bloat to slow 'er down.
 * Modular. Everything is optional.
 * Familiar. & otherwise intuitive.
@@ -15,7 +10,7 @@ A super-minimal pure PHP MVC toolkit.
 ## Controller
 
 The controller layer represents the interface for your application. 
-It defines `Route`s, accepts a `Request`, and returns a `Response`.
+Use it to define a `Route`, accept a `Request`, and return a `Response`.
 
 ### Hello World
 
@@ -32,49 +27,50 @@ We'll start with a Hello world route in `app.php`.
 
 The router is powerful in its simplicity.
 
-* Path string matches
+* Exact string match
 * Regular expressions
+* Simplified expressions
 * Array of conditions
 * Arbitrary callbacks
 
 You can even group routes based on criteria:
-	
-	<?php
 
-	$app->group('/api/1', function($app){
-		$app->group('/user', function($app){
-			$app->put(function(){
-				// Create user
-			})
-			->get('/:id', function(){
-				// Retrieve user
-			})
-			->post('/:id', function(){
-				// Update user
-			})
-			->delete('/:id', function(){
-				// Delete user
-			});
+```php
+$app->group('/api/1', function($app){
+	$app->group('/user', function($app){
+		$app->put(function(){
+			// Create user
+		})
+		->get('/:id', function(){
+			// Retrieve user
+		})
+		->post('/:id', function(){
+			// Update user
+		})
+		->delete('/:id', function(){
+			// Delete user
 		});
 	});
+});
+```
 
 You can attach middleware to routes with `->before()` and `->after()`.
 
-	<?php
-
-	$app->before('*', function($req, $resp){
-		House\Log::info('Request: ' . $req);
-		$resp->code(200);
-	});
+```php
+$app->before('*', function($req, $resp){
+	House\Log::info('Request: ' . $req);
+	$resp->code(200);
+});
+```
 
 You can optionally catch errors per route as well.
 
-	<?php
-
-	$app->error('*', function($req, $resp){
-		House\Log::error($req->exception->getMessage());
-		return 500;
-	});
+```php
+$app->error('*', function($req, $resp){
+	House\Log::error($req->exception->getMessage());
+	return 500;
+});
+```
 
 Notice that the return value is intuitively written to the response.
 
@@ -89,15 +85,15 @@ See `example.php` for more examples of exactly how badass `Router` is.
 The model layer is very basic. There is no ORM. If you need a more robust
 model layer, please see Symfony or php-activerecord. Otherwise, check this:
 
-	<?php
+```php
+class User extends House\Model {}
 
-	class User extends House\Model {}
-	
-	// throws House\NotFound
-	User::find(['id' => 1]);
+// throws House\NotFound
+User::find(['id' => 1]);
 
-	// returns array() 
-	$users = User::where(['status' => ['active', 'inactive']])->limit(5)->all();
+// returns array() 
+$users = User::where(['status' => ['active', 'inactive']])->limit(5)->all();
+```
 
 ### Supported databases
 
@@ -115,13 +111,12 @@ but House could potentially support any template engine, flat file, etc. Since H
 framework, there is no special View registry or folder, so you can easily install alternative
 template engines with composer and use them as-is.
 
-	<?php
+```php
+$app->get('test.json', function($req, $resp){
+	return json(['hello' => 'world']);
+});
 
-	$app->get('test.json', function($req, $resp){
-		return json(['hello' => 'world']);
-	});
-
-	$app->get('/', function(){
-		return haml('index');
-	});
-
+$app->get('/', function(){
+	return haml('index');
+});
+```
