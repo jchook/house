@@ -16,12 +16,12 @@ Use it to define a `Route`, accept a `Request`, and return a `Response`.
 
 We'll start with a Hello world route in `app.php`.
 
-	<?php
-	
-	$app = new House\Router;
-	$app->get('/', function($req, $resp){
-		return 'Hello World';			
-	});
+```php	
+$app = new House\Router;
+$app->get('/', function($req, $resp){
+	return 'Hello World';			
+});
+```
 
 ### Advanced route matching
 
@@ -33,28 +33,26 @@ The router is powerful in its simplicity.
 * Array of conditions
 * Arbitrary callbacks
 
-You can even group routes based on criteria:
+You can even nest routes based on criteria:
 
 ```php
-$app->group('/api/1', function($app){
-	$app->group('/user', function($app){
-		$app->put(function(){
-			// Create user
-		})
-		->get('/:id', function(){
-			// Retrieve user
-		})
-		->post('/:id', function(){
-			// Update user
-		})
-		->delete('/:id', function(){
-			// Delete user
-		});
+$app->group('/user', function($app){
+	$app->put(function(){
+		// Create user
+	})
+	->get('/:id', function(){
+		// Retrieve user
+	})
+	->post('/:id', function(){
+		// Update user
+	})
+	->delete('/:id', function(){
+		// Delete user
 	});
 });
 ```
 
-You can attach middleware to routes with `->before()` and `->after()`.
+You can attach middleware to routes with `before()` and `after()`.
 
 ```php
 $app->before('*', function($req, $resp){
@@ -72,13 +70,14 @@ $app->error('*', function($req, $resp){
 });
 ```
 
-Notice that the return value is intuitively written to the response.
+Notice that the return value is passed to `$response->write()`.
 
 * Strings write to the repsonse body
 * Integers set the response code
 * Arrays for Rack-style response
 
 See `example.php` for more examples of exactly how badass `Router` is.
+
 
 ## Model
 
