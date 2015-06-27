@@ -9,7 +9,7 @@ A super-minimal pure PHP MVC toolkit.
 
 ## Controller
 
-The controller layer represents the interface for your application. 
+The controller layer is the interface for your application. 
 Use it to define a `Route`, accept a `Request`, and return a `Response`.
 
 ### Hello World
@@ -32,6 +32,14 @@ The router is powerful in its simplicity.
 * Simplified expressions
 * Array of conditions
 * Arbitrary callbacks
+
+Try this simplified expression route that says hello to an arbitrary name.
+
+```php
+$app->get('/hello/:name', function($req){
+	return 'Hello ' . $req->param('name');
+});
+```
 
 You can even nest routes based on criteria:
 
@@ -70,7 +78,7 @@ $app->error('*', function($req, $resp){
 });
 ```
 
-Notice that the return value is passed to `$response->write()`.
+Notice that controller return values are passed to `$response->write()`.
 
 * Strings write to the repsonse body
 * Integers set the response code
