@@ -25,12 +25,28 @@ class Response {
 	}
 
 	public function header($header) {
-		$this->head[] = $header;
+		if (is_array($header)) {
+			$this->head = array_merge($this->head, $header);
+		} else {
+			$this->head[] = $header;
+		}
 		return $this;
 	}
 
 	public function write($toStringable) {
-		$this->body[] = $toStringable;
+		if (is_array($toStringable)) {
+			if ($body = array_pop($toStringable)) {
+				$this->body[] = $body;
+			}
+			if ($code = array_shift($toStringable)) {
+				$this->code($code);
+			}
+			if ($head = array_pop($toStringable)) {
+				$this->header($head);
+			}
+		} else {
+			$this->body[] = $toStringable;
+		}
 		return $this;
 	}
 
