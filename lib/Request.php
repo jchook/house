@@ -11,19 +11,13 @@ class Request {
 	public $params = array();
 	public $matches = array();
 
-	function __construct(array $config = array()) {
+	public function __construct(array $config = array()) {
 		foreach ($config as $var => $val) {
 			$this->{$var} = $val;
 		}
 	}
 
-	function addParams($params) {
-		if (is_array($params)) {
-			$this->params = array_merge($this->params, $params);
-		}
-	}
-
-	function param($param) {
+	public function param($param) {
 		if (isset($this->params[$param])) {
 			return $this->params[$param];
 		}
@@ -32,7 +26,11 @@ class Request {
 		}
 	}
 
-	function __toString() {
+	public function params() {
+		return array_merge($this->matches, $this->params);
+	}
+
+	public function __toString() {
 		return implode('', [
 			$this->method ? strtoupper($this->method) . ' ' : '', 
 			$this->scheme ? $this->scheme . '://' : '',

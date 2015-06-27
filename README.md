@@ -118,12 +118,23 @@ but House could potentially support any template engine, flat file, etc. Since H
 framework, there is no special View registry or folder, so you can easily install alternative
 template engines with composer and use them as-is.
 
-```php
-$app->get('test.json', function($req, $resp){
-	return json(['hello' => 'world']);
-});
+Quickly configure your app to use Haml for example:
 
-$app->get('/', function(){
-	return haml('index');
+```php
+House\Haml::config([
+	'cache' => sys_get_temp_dir() . '/haml',
+	'views' => __DIR__ . '/views',
+]);
+
+function haml($view, $vars = array(), $config = array()) {
+	return new House\Haml($view, $vars, $config);
+}
+```
+
+Then implement it in your application with ease:
+
+```php
+$app->get('/', function($req){
+	return haml('index', $req->params());
 });
 ```
