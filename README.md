@@ -2,10 +2,6 @@
 
 A super-minimal pure PHP MVC toolkit.
 
-* Fast. No bloat to slow 'er down.
-* Modular. Everything is optional.
-* Familiar. & otherwise intuitive.
-
 
 ## Controller
 
@@ -30,8 +26,8 @@ The router is powerful in its simplicity.
 * Exact string match
 * Regular expressions
 * Simplified expressions
-* Array of conditions
 * Arbitrary callbacks
+* An array of the above
 
 Try this simplified expression route that says hello to an arbitrary name.
 

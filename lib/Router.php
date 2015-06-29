@@ -92,6 +92,10 @@ class Router {
 		array_pop($this->groups);
 		return $this;
 	}
+
+	public function route($match) {
+		return $this::createRoute(compact('match'));
+	}
 }
 
 ?>

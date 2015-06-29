@@ -4,13 +4,13 @@ namespace House;
 
 abstract class Model {
 
-	public static $autoIncrementId = true;
+	protected static $autoIncrement = 'id';
+	protected static $primaryKey = ['id'];
 	protected static $table;
 
+	// Update? (vs insert)
 	protected $_stored;
 	
-
-	// default constructor
 	public function __construct(array $config = array()) {
 		foreach ($config as $var => $val) {
 			$this->{$var} = $val;
@@ -48,6 +48,21 @@ abstract class Model {
 		return get_public_object_vars($this);
 	}
 
+	public function delete() {
+		return $this::query([
+			'delete' => true,
+			'where' => $this->primaryKey(), 
+		])->run();
+	}
+
+	public function primaryKey() {
+		$pk = [];
+		foreach (static::$primaryKey as $column) {
+			$pk[$column] = isset($this->$column) ? $this->$column : null;
+		}
+		return $pk;
+	}
+
 	public function save($validate = true) {
 
 		// Validate
@@ -65,19 +80,20 @@ abstract class Model {
 
 		// Insert
 		else {
-
 			$result = $this::query([
 				'insert' => true,
 				'values' => $this->attributes(),
 			])->run();
 
-
 			// Update the ID if needed
 			// (isn't this kind of dumb overall? guid?)
-			if ($result && $this::$autoIncrementId) {
-				$this->id = $result->db()->insertId();
+			if ($result && $this::$autoIncrement) {
+				$column = $this::$autoIncrement;
+				$this->$column = $result->db()->insertId();
 			}
 		}
+
+		return $result;
 	}
 
 	/**

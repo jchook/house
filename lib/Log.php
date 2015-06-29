@@ -4,7 +4,7 @@ namespace House;
 
 class Log {
 
-	protected static $config = array('path' => null, 'whitelist' => array());
+	protected static $config = array('path' => null, 'whitelist' => array(), 'blacklist' => array());
 
 	public static function config(array $config = array()) {
 		foreach ($config as $var => $val) {
@@ -17,8 +17,7 @@ class Log {
 			return;
 		}
 		
-		// Write information to the nginx error log
-		error_log($fn . ' ' . implode(' ', $args), 4);
+		error_log($fn . ' ' . implode(' ', $args));
 	}
 }
 

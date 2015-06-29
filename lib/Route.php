@@ -36,9 +36,9 @@ class Route {
 	}
 
 	protected function compileMatchRegExp($regexp) {
-		return function($request) use ($regexp) {
+		return function($path) use ($regexp) {
 			$matches = array();
-			$matched = preg_match($regexp, $request->path, $matches);
+			$matched = preg_match($regexp, $path, $matches);
 			return $matches ?: $matched;
 		};
 	}
@@ -50,7 +50,7 @@ class Route {
 		return $this->compileMatchRegExp('#^' . preg_replace_callback('#/:([a-zA-Z][a-zA-Z0-9_]*)#', function($matches) use ($route) {
 			// http://www.regular-expressions.info/named.html
 			return '/' . '(?P<' . $matches[1] . '>[^/?]+)';
-		}, $path) . '$#');
+		}, $path) . '#');
 	}
 
 	protected function compileMatch($path) {
@@ -71,8 +71,8 @@ class Route {
 			}
 
 			// quasi-regex
-			elseif ((false !== stripos(':', $path)) || (false !== stripos('*', $path))) {
-				$match[] = $this->compileMatchExpression($path);	
+			elseif ((false !== stripos($path, ':')) || (false !== stripos($path, '*'))) {
+				$match[] = $this->compileMatchExpression($path);
 			}
 
 			// exact match
@@ -110,7 +110,7 @@ class Route {
 
 			// Pure string match
 			elseif (is_string($pattern)) {
-				$matches = strcmp($pattern, $matchablePortion) == 0 ? [$pattern] : false;
+				$matches = strncmp($pattern, $matchablePortion, strlen($pattern)) == 0 ? [$pattern] : false;
 			}
 
 			// Regular expressions are compiled to callbacks
@@ -131,6 +131,11 @@ class Route {
 				$matches[0] = $superMatches[0] . $matches[0];
 				$superMatches = array_merge($superMatches, $matches);
 			}
+		}
+
+		// If there's any string left-over, it didn't match.
+		if ($matchablePortion) {
+			return false;
 		}
 
 		// This might be a little funny for multi-match scenarios

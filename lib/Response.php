@@ -8,6 +8,11 @@ class Response {
 	protected $code = 200;
 	protected $head = array();
 
+	public function body($iterable) {
+		$this->body = $iterable;
+		return $this;
+	}
+
 	public function code($code = null) {
 		if (is_numeric($code)) {
 			$this->code = $code;
@@ -24,6 +29,11 @@ class Response {
 		return $this->code;
 	}
 
+	public function head($head) {
+		$this->head = $head;
+		return $this;
+	}
+
 	public function header($header) {
 		if (is_array($header)) {
 			$this->head = array_merge($this->head, $header);
@@ -31,6 +41,22 @@ class Response {
 			$this->head[] = $header;
 		}
 		return $this;
+	}
+
+	public function respond() {
+
+		// Requires PHP >= 5.4
+		http_response_code($this->code);
+
+		// Additional headers
+		foreach ($this->head as $header) {
+			header($header);
+		}
+
+		// Write the body
+		foreach ($this->body as $toStringable) {
+			echo $toStringable;
+		}
 	}
 
 	public function write($toStringable) {
@@ -48,26 +74,6 @@ class Response {
 			$this->body[] = $toStringable;
 		}
 		return $this;
-	}
-
-	public function body($iterable) {
-		$this->body = $iterable;
-	}
-
-	public function respond() {
-
-		// Requires PHP >= 5.4
-		http_response_code($this->code);
-
-		// Additional headers
-		foreach ($this->head as $header) {
-			header($header);
-		}
-
-		// Write the body
-		foreach ($this->body as $toStringable) {
-			echo $toStringable;
-		}
 	}
 }
 

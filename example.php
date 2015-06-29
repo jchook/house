@@ -6,21 +6,21 @@ require 'autoload.php';
 	
 	// Before filters
 	->before('*', function($req, $resp){
-		House\Log::info('Request: ' . $req);
+		// $resp->code(200);
+		// $resp->write('Request: ' . $req);
 	})
 
-	// Controller
+	// Hello World!
 	->get('/', function($req, $resp){
-		return 'Hello World';
+		return 'Hello World!';
 	})
 
-	// Resource-ish
-	->group('/user')
-		->get(function(){ /* .. */ })
-		->post(function(){ /* .. */ })
-		->delete(function(){ /* .. */ })
-	->end()
+	// Hello, <name>!
+	->get('/hello/:name', function($req, $resp){
+		return 'Hello, ' . $req->param('name') . '!';
+	})
 
+	// Grouped routes
 	->group('/api/:version')
 		->group('/user')
 			->put(function(){})
@@ -30,7 +30,13 @@ require 'autoload.php';
 		->end()
 	->end()
 
-	// Do it.
-	->request(new House\Request([ 'method' => 'get', 'path' => '/' ]))
+	// Perform request
+	->request(new House\Request([ 
+		'method' => isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'get',
+		'path' => isset($_SERVER['DOCUMENT_URI']) ? $_SERVER['DOCUMENT_URI'] : '/',
+		'params' => array_merge($_GET, $_POST),
+	]))
+
+	// Output response
 	->respond()
 ;
