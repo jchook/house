@@ -26,8 +26,18 @@ class Request {
 		}
 	}
 
-	public function params() {
-		return array_merge($this->matches, $this->params);
+	public function params(array $permit = array()) {
+		$params = array_merge($this->matches, $this->params);
+		if (!$permit) {
+			return $params;
+		}
+		$permitted = array();
+		foreach ($permit as $param) {
+			if (isset($params[$param])) {
+				$permitted[] = $params[$param];
+			}
+		}
+		return $permitted;
 	}
 
 	public function __toString() {

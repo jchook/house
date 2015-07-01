@@ -8,8 +8,8 @@ class Response {
 	protected $code = 200;
 	protected $head = array();
 
-	public function body($iterable) {
-		$this->body = $iterable;
+	public function body($body) {
+		$this->body = is_string($body) ? [$body] : $body;
 		return $this;
 	}
 
@@ -60,9 +60,11 @@ class Response {
 	}
 
 	public function write($toStringable) {
+
+		// Full rack response overwrites
 		if (is_array($toStringable)) {
 			if ($body = array_pop($toStringable)) {
-				$this->body[] = $body;
+				$this->body($body); 
 			}
 			if ($code = array_shift($toStringable)) {
 				$this->code($code);
@@ -70,9 +72,14 @@ class Response {
 			if ($head = array_pop($toStringable)) {
 				$this->header($head);
 			}
-		} else {
+		} 
+
+		// Non-array writes to the body
+		else {
 			$this->body[] = $toStringable;
 		}
+
+		// Chainable
 		return $this;
 	}
 }

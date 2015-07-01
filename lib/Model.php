@@ -12,9 +12,11 @@ abstract class Model {
 	protected $_stored;
 	
 	public function __construct(array $config = array()) {
-		foreach ($config as $var => $val) {
-			$this->{$var} = $val;
-		}
+		$this->attributes($config);
+	}
+
+	public static function find($where) {
+		return static::where($where)->find();
 	}
 
 	public static function fetch($id) {
@@ -44,8 +46,14 @@ abstract class Model {
 		]);
 	}
 
-	public function attributes() {
-		return get_public_object_vars($this);
+	public function attributes($set = null) {
+		if (is_null($set)) {
+			return get_public_object_vars($this);
+		} else {
+			foreach ($set as $var => $val) {
+				$this->{$var} = $val;
+			}
+		}
 	}
 
 	public function delete() {
