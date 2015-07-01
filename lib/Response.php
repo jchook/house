@@ -46,15 +46,15 @@ class Response {
 	public function respond() {
 
 		// Requires PHP >= 5.4
-		http_response_code($this->code);
+		if ($this->code) http_response_code($this->code);
 
 		// Additional headers
-		foreach ($this->head as $header) {
+		if ($this->head) foreach ($this->head as $header) {
 			header($header);
 		}
 
 		// Write the body
-		foreach ($this->body as $toStringable) {
+		if ($this->body) foreach ($this->body as $toStringable) {
 			echo $toStringable;
 		}
 	}
@@ -73,6 +73,11 @@ class Response {
 				$this->header($head);
 			}
 		} 
+
+		// Integers are response codes
+		elseif (is_int($toStringable)) {
+			$this->code($toStringable);
+		}
 
 		// Non-array writes to the body
 		else {

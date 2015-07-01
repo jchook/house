@@ -10,6 +10,7 @@ class Request {
 	public $path;
 	public $params = array();
 	public $matches = array();
+	public $exception;
 
 	public function __construct(array $config = array()) {
 		foreach ($config as $var => $val) {
