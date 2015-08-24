@@ -1,18 +1,26 @@
 <?php
 
-namespace House;
+namespace House\Database;
 
 abstract class Model {
 
 	protected static $autoIncrement = 'id';
 	protected static $primaryKey = ['id'];
 	protected static $table;
+	protected static $db;
 
 	// Update? (vs insert)
 	protected $_stored;
 	
-	public function __construct(array $config = array()) {
-		$this->attributes($config);
+	public function __construct(array $attr = array()) {
+		$this->updateAttributes($attr);
+	}
+
+	public static function create($attr = array()) {
+		$className = get_class($this);
+		$obj = new $className($attr);
+		$obj->save();
+		return $obj;
 	}
 
 	public static function find($where) {
@@ -33,8 +41,6 @@ abstract class Model {
 
 	public static function table() {
 		if (!static::$table) {
-
-			// I find this line delightfully humorous (cough inflector cough)
 			static::$table = lcfirst(get_called_class()) . 's';
 		}
 		return static::$table;
@@ -47,13 +53,11 @@ abstract class Model {
 	}
 
 	public function attributes($set = null) {
-		if (is_null($set)) {
-			return get_public_object_vars($this);
-		} else {
-			foreach ($set as $var => $val) {
-				$this->{$var} = $val;
-			}
-		}
+		return get_public_object_vars($this);
+	}
+
+	public function clusterNode() {
+		return $this::$db;
 	}
 
 	public function delete() {
@@ -102,6 +106,14 @@ abstract class Model {
 		}
 
 		return $result;
+	}
+
+
+	public function updateAttributes($attributes = array()) {
+		foreach ($attributes as $var => $val) {
+			$this->{$var} = $val;
+		}
+		return $this;
 	}
 
 	/**

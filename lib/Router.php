@@ -94,7 +94,8 @@ class Router {
 	}
 
 	public function route($match) {
-		return $this::createRoute(compact('match'));
+		$this->routes[] = $route = $this::createRoute(compact('match'));
+		return $route;
 	}
 }
 

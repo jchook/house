@@ -2,18 +2,26 @@
 
 namespace House;
 
+use Exception;
+
 class Cluster {
 
 	const DEFAULT_NODE = 'default';
 
 	protected static $config = array();
+	protected static $assignments = array();
 
 	public static function config(array $config = array()) {
 		static::$config = $config;
 	}
 
+	public static function assign(array $assignments = array()) {
+		static::$assignments = array_merge(static::$assignments, $assignments)
+	}
+
 	public static function nodeFor($model) {
-		$nodeName = isset($model::$db) ? $model::$db : null;
+		$className = get_class($model);		
+		$nodeName = isset(static::$assignments[$className]) ? static::$assignments[$className] : null;
 		return static::node($nodeName);
 	}
 
@@ -32,7 +40,7 @@ class Cluster {
 			}
 			return static::$config[$name]['obj'];
 		}
-		throw new \Exception('Cluster node ' . $name . ' was not found');
+		throw new Exception('Cluster node ' . $name . ' was not found');
 	}
 
 }

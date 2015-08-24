@@ -1,8 +1,11 @@
 <?php
 
-namespace House;
+namespace House\Database;
 
-class MySql extends Database {
+use mysqli;
+use Exception;
+
+class MySql extends Adapter {
 
 	protected $link;
 	protected $whereParamsKey = 0;
@@ -12,7 +15,7 @@ class MySql extends Database {
 		$this->link = new mysqli($this->host, $this->user, $this->pass, $this->database, $this->port, $this->socket);
 		if ($this->link->connect_errno) {
 			Log::error('mysql connection error: ' . $this->link->connect_errno . ' ' . $this->link->connect_error);
-			throw new \Exception('Database Connection Error');
+			throw new Exception('Database Connection Error');
 		}
 		return $this->link;
 	}
@@ -24,7 +27,7 @@ class MySql extends Database {
 		if (is_array($values)) {
 			$set = array();
 			foreach ($values as $var => $val) {
-				$set[] = '`' . $var . '`=' . $this->quoteSanitized($val);
+				$set[] = '`' . $var . '`=' . $this->quote($val);
 			}
 			return implode(', ', $set);
 		}
@@ -53,7 +56,7 @@ class MySql extends Database {
 			$sql = 'INSERT INTO `' . $query->table . '`';
 
 			if ($query->values) {
-				$sql .= ' (`' . implode('`, `', array_keys($query->values)) . '`) VALUES (' . implode(', ', array_map(array($this, 'quoteSanitized'), $query->values)) . ')'; 
+				$sql .= ' (`' . implode('`, `', array_keys($query->values)) . '`) VALUES (' . implode(', ', array_map(array($this, 'quote'), $query->values)) . ')'; 
 			}
 
 			return $sql;
@@ -102,7 +105,7 @@ class MySql extends Database {
 	/**
 	 * SQL and field names are NOT santitized. Only associated values are escaped.
 	 */
-	protected function buildWhere($input, $defaultConjunction = 'AND') {
+	protected function buildWhere($input, &$params = array()) {
 		
 		if (!is_array($input)) {
 			return $input;
@@ -110,6 +113,7 @@ class MySql extends Database {
 		
 		$where = array();
 		$conjunction = null;
+		$defaultConjunction = 'AND';
 		
 		foreach ($input as $key => $value) {
 			$condition = null;
@@ -121,7 +125,7 @@ class MySql extends Database {
 
 			// Compound condition
 			elseif (is_array($value)) {
-				$condition = '(' . $this->buildWhere($value) . ')';
+				$condition = '(' . $this->buildWhere($value, $params) . ')';
 			} 
 
 			// Special cases
@@ -136,18 +140,18 @@ class MySql extends Database {
 				if (is_array($value)) {
 					$comparison = ($comparison == '!=' || $comparison == 'NOT') ? 'NOT IN' : 'IN';
 					if (strpos($field, ')') !== false) {
-						$condition = $field . " $comparison (" . implode(', ', array_map(array($this, 'quoteSanitized'), $value)) . ')';
+						$condition = $field . " $comparison (" . implode(', ', array_map(array($this, 'quote'), $value)) . ')';
 					}
 					else {
-						$condition = '`' . $field . "` $comparison (" . implode(', ', array_map(array($this, 'quoteSanitized'), $value)) . ')';
+						$condition = '`' . $field . "` $comparison (" . implode(', ', array_map(array($this, 'quote'), $value)) . ')';
 					}
 				} else {
 					//check the condition for MySQL Function applied to field
 					if (strpos($field, ')') !== false) {
-						$condition = $field . ' ' . $comparison . ' ' . $this->quoteSanitized($value);
+						$condition = $field . ' ' . $comparison . ' ' . $this->quote($value);
 					}
 					else {
-						$condition = '`' . $field . '` ' . $comparison . ' ' . $this->quoteSanitized($value);
+						$condition = '`' . $field . '` ' . $comparison . ' ' . $this->quote($value);
 					}
 				}
 			} 
@@ -157,7 +161,13 @@ class MySql extends Database {
 				if (in_array(strtoupper($value), array('AND', 'OR'))) {
 					$conjunction = strtoupper($value);
 				} else {
-					$condition = $value;
+					$strap = array_reverse(explode('?', $value));
+					$smarap = array_reverse($params);
+					$condition = '';
+					while (count($smarap) > 1) {
+						$condition = array_pop($smarap) . $this->quote(array_pop($strap));
+					}
+					$condition .= array_pop($smarap);
 				}
 			}
 			
@@ -202,7 +212,7 @@ class MySql extends Database {
 		$link = $this->link();
 		Log::query($sql);
 		if ($result = $link->query($sql)) {
-			return new DatabaseResponse(compact('db', 'query', 'result'));
+			return new Result(compact('db', 'query', 'result'));
 		}
 
 		// Error handling
@@ -211,7 +221,7 @@ class MySql extends Database {
 			Log::error(implode(' ', $error));
 		}
 
-		throw new \Exception('Query Error');
+		throw new Exception('Query Error');
 	}
 
 }

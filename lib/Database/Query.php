@@ -1,6 +1,8 @@
 <?php
 
-namespace House;
+namespace House\Database;
+
+use House\NotFound;
 
 class Query {
 
@@ -63,9 +65,9 @@ class Query {
 		return Cluster::nodeFor($this->model)->query($this);
 	}
 
-	public function where($cond) {
+	public function where(/* polymorphic */) {
 		$args = func_get_args();
-		array_shift($args);
+		$cond = array_shift($args);
 		$this->where[] = $cond;
 		$this->whereParams[] = $args;
 		return $this;

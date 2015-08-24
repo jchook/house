@@ -1,8 +1,10 @@
 <?php
 
-namespace House;
+namespace House\Database;
 
-class DatabaseResponse implements \Iterator {
+use Exception;
+
+class Result implements \Iterator {
 
 	// Important
 	protected $db;
@@ -23,7 +25,7 @@ class DatabaseResponse implements \Iterator {
 		}
 
 		if (!($this->query instanceof Query)) {
-			throw new \Exception(__CLASS__ . ' invalid Query object');	
+			throw new Exception(__CLASS__ . ' invalid Query object');	
 		}
 
 		if (is_resource($this->result)) {

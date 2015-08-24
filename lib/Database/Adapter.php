@@ -1,8 +1,8 @@
 <?php
 
-namespace House;
+namespace House\Database;
 
-abstract class Database {
+abstract class Adapter {
 
 	public $host;
 	public $port;

@@ -2,7 +2,10 @@
 
 namespace House;
 
-class Config {
+/**
+ * Roll a quick static/global config
+ */
+abstract class Config {
 
 	protected static $config = array();
 
