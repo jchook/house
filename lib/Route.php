@@ -16,10 +16,7 @@ class Route {
 	}
 
 	public function bind($method, $callback) {
-		if (!isset($callbacks[$method])) {
-			$callbacks[$method] = array();
-		}
-		$this->callbacks[$method][] = $callback;
+		$this->callbacks[] = compact('method', 'callback');
 	}
 
 	public function config($config) {
@@ -93,7 +90,13 @@ class Route {
 	}
 
 	public function getCallbacks($method) {
-		return isset($this->callbacks[$method]) ? $this->callbacks[$method] : array();
+		$callbacks = array();
+		foreach ($this->callbacks as $cb) {
+			if (is_array($cb['method']) ? in_array($method, $cb['method']) : ($cb['method'] == $method)) {
+				$callbacks[] = $cb['callback'];
+			}
+		}
+		return $callbacks;
 	}
 
 	public function match(Request $request) {

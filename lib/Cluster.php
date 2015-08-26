@@ -16,7 +16,7 @@ class Cluster {
 	}
 
 	public static function assign(array $assignments = array()) {
-		static::$assignments = array_merge(static::$assignments, $assignments)
+		static::$assignments = array_merge(static::$assignments, $assignments);
 	}
 
 	public static function nodeFor($model) {

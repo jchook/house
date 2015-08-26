@@ -2,6 +2,12 @@
 
 namespace House;
 
+use Exception;
+use House\NotFound;
+use House\Request;
+use House\Response;
+use House\Route;
+
 class Router {
 	
 	protected $groups = array();
@@ -17,6 +23,20 @@ class Router {
 		$match = array_merge($this->groups, [array_shift($args)]);
 		$this->routes[] = $route = $this::createRoute(['match' => $match]);
 		$route->bind($method, $callback);
+		return $this;
+	}
+
+	public function end() {
+		array_pop($this->groups);
+		return $this;
+	}
+
+	public function group($match, $callback = null) {
+		$this->groups[] = $match;
+		if ($callback) {
+			$callback($this);
+			$this->end();
+		}
 		return $this;
 	}
 
@@ -65,7 +85,9 @@ class Router {
 	 		// Do the main request
 	 		$this->matchRoutes($request);
 	 		$this->handleRequest($request, $response, 'before');
-	 		$this->handleRequest($request, $response, $request->method, ['limit' => 1]);
+	 		if (!$this->handleRequest($request, $response, $request->method, ['limit' => 1])) {
+	 			throw new NotFound;
+	 		}
 	 		$this->handleRequest($request, $response, 'after');
 
 	 	// Optional route-based error handling
@@ -77,20 +99,6 @@ class Router {
 	 	}
 
 	 	return $response;
-	}
-
-	public function group($match, $callback = null) {
-		$this->groups[] = $match;
-		if ($callback) {
-			$callback($this);
-			$this->end();
-		}
-		return $this;
-	}
-
-	public function end() {
-		array_pop($this->groups);
-		return $this;
 	}
 
 	public function route($match) {
