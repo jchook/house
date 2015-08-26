@@ -4,6 +4,7 @@ namespace House\Database;
 
 use mysqli;
 use Exception;
+use House\Log;
 
 class MySql extends Adapter {
 

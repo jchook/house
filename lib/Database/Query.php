@@ -16,6 +16,8 @@ class Query {
 	protected $truncate;
 
 	protected $group;
+	protected $having;
+	protected $index;
 	protected $limit;
 	protected $name;
 	protected $offset;
