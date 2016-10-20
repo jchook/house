@@ -1,6 +1,7 @@
 {
     "name": "jchook/house",
     "description": "House PHP — A minimal MVC Application Toolset",
+    "version": "0.0.1",
     "license": "MIT",
     "authors": [
         {
